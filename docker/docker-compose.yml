@@ -1,0 +1,99 @@
+version: '3.6'
+
+services:
+  php:
+    build: ./build/php
+    volumes:
+      - ${SRC_LOCAL_FOLDER}:/var/www/project:rw
+      - ${SHARE_LOCAL_FOLDER}:/share:rw
+      - ${LOGS_LOCAL_FOLDER}/laravel:/var/www/project/storage/logs:rw
+    depends_on:
+      - db
+    networks:
+      - backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  node:
+    build: ./build/node
+    volumes:
+      - ${SRC_LOCAL_FOLDER}:/var/www/project:rw
+    restart: unless-stopped
+    networks:
+      - backend
+
+  web_server:
+    build: ./build/nginx
+    volumes:
+      - ${SRC_LOCAL_FOLDER}:/var/www/project:rw
+      - ${SHARE_LOCAL_FOLDER}:/share:rw
+      - ${LOGS_LOCAL_FOLDER}/nginx:/var/log/nginx:rw
+    ports:
+      - '${INTERFACE}:${HTTP_PORT_LOCAL}:80'
+    depends_on:
+      - php
+    networks:
+      - backend
+    restart: unless-stopped
+
+  db:
+    build: ./build/postgres
+    volumes:
+      - ${SHARE_LOCAL_FOLDER}:/share:rw
+      - ${DB_LOCAL_FOLDER}:/var/lib/postgresql/data:rw
+    ports:
+      - '${INTERFACE}:${PG_PORT_LOCAL}:5432'
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    networks:
+      - backend
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_USER=${REDIS_USER}
+      - REDIS_USER_PASSWORD=${REDIS_USER_PASSWORD}
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./build/redis/data:/data
+    command: >
+      sh -c '
+        mkdir -p /usr/local/etc/redis &&
+        echo "bind 0.0.0.0" > /usr/local/etc/redis/redis.conf &&
+        echo "requirepass $REDIS_PASSWORD" >> /usr/local/etc/redis/redis.conf &&
+        echo "appendonly yes" >> /usr/local/etc/redis/redis.conf &&
+        echo "appendfsync everysec" >> /usr/local/etc/redis/redis.conf &&
+        echo "user default on nopass ~* +@all" > /usr/local/etc/redis/users.acl &&
+        echo "user $REDIS_USER on >$REDIS_USER_PASSWORD ~* +@all" >> /usr/local/etc/redis/users.acl &&
+        redis-server /usr/local/etc/redis/redis.conf --aclfile /usr/local/etc/redis/users.acl
+      '
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    networks:
+      - backend
+
+volumes:
+  volume_source:
+    driver: local
+    driver_opts:
+      device: ${SRC_LOCAL_FOLDER}
+      type: none
+      o: bind
+  volume_share:
+    driver: local
+    driver_opts:
+      device: ${SHARE_LOCAL_FOLDER}
+      type: none
+      o: bind
+
+networks:
+  backend:
+    driver: bridge
