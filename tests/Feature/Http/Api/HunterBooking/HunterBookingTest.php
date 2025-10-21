@@ -19,7 +19,7 @@ class HunterBookingTest extends TestCase
             'tour_name' => 'Bear hunter',
             'hunter_name' => 'Vasia Vlaznii',
             'booking_date' => now()->addDay()->format('Y-m-d'),
-            'participants_count' => 9
+            'participants_count' => 9,
         ]));
 
         $response->assertStatus(201);
@@ -37,7 +37,7 @@ class HunterBookingTest extends TestCase
             'tour_name' => 'Bear hunter',
             'hunter_name' => 'Vasia Vlaznii',
             'booking_date' => now()->addDay()->format('Y-m-d'),
-            'participants_count' => 9
+            'participants_count' => 9,
         ]));
 
         $response->assertStatus(201);
@@ -47,7 +47,7 @@ class HunterBookingTest extends TestCase
             'tour_name' => 'Bear hunter',
             'hunter_name' => 'Vasia Vlaznii',
             'booking_date' => now()->addDay()->format('Y-m-d'),
-            'participants_count' => 9
+            'participants_count' => 9,
         ]));
 
         $response->assertStatus(400);
@@ -65,7 +65,7 @@ class HunterBookingTest extends TestCase
             'tour_name' => 'Bear hunter',
             'hunter_name' => 'Vasia Vlaznii',
             'booking_date' => now()->addDay()->format('Y-m-d'),
-            'participants_count' => 12
+            'participants_count' => 12,
         ]));
 
         $response->assertStatus(422);

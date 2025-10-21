@@ -16,9 +16,7 @@ final class BookingDto
         private readonly CarbonImmutable $bookingDate,
         private readonly int $participantsCount,
         private ?HuntingBooking $huntingBooking = null,
-    ) {
-
-    }
+    ) {}
 
     public function getGuideId(): string
     {
@@ -48,6 +46,7 @@ final class BookingDto
     public function setHuntingBooking(HuntingBooking $huntingBooking): BookingDto
     {
         $this->huntingBooking = $huntingBooking;
+
         return $this;
     }
 

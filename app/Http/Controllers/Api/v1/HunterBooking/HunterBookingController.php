@@ -24,7 +24,7 @@ final class HunterBookingController
                 ->thenReturn();
         });
 
-        if (!$booking) {
+        if (! $booking) {
             return response()->json(status: Response::HTTP_BAD_REQUEST);
         }
 

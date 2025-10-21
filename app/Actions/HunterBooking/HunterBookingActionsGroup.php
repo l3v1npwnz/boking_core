@@ -10,6 +10,6 @@ final class HunterBookingActionsGroup extends ActionGroup
 {
     protected $pipes = [
         CheckBookingAvailableAction::class,
-        ConfirmHuntingBookingAction::class
+        ConfirmHuntingBookingAction::class,
     ];
 }

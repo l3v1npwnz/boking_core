@@ -16,7 +16,7 @@ final class BookingRequest extends FormRequest
             'guide_id' => [
                 'required',
                 'integer',
-                'exists:guides,id'
+                'exists:guides,id',
             ],
             'tour_name' => [
                 'required',
@@ -34,7 +34,7 @@ final class BookingRequest extends FormRequest
                 'required',
                 'integer',
                 'lte:'.config('hunter-booking.participants-count'),
-            ]
+            ],
         ];
     }
 
